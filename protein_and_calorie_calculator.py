@@ -3,9 +3,10 @@ def get_weight():
         weight = int(input("What is your weight in kilograms? "))
         if weight < 0 or weight > 1250:
             raise ValueError("Weight must be realistic.")
+        return weight
     except ValueError:
         print("===Invalid input.===")
-weight = get_weight()
+        return None
 
 def get_other_user_input():
     print("=============================================")
@@ -22,20 +23,16 @@ def get_other_user_input():
     print("4 - Very active (exercise 6-7 days/week)")
     print("5 - Extremely active (physical job + exercise)")
     activity_level = input("Choose your activity level (1-5): ")
-
     return gender, age, height, activity_level
-gender, age, height, activity_level = get_other_user_input()
 
-
-def calculate_bmr():
+def calculate_bmr(weight, gender, age, height):
     if gender == "male":
         bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
     else:
         bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
     return bmr
-bmr = calculate_bmr()
 
-def see_activity_level():
+def see_activity_level(bmr, weight, activity_level):
     if activity_level == "1":
         bmr *= 1.2
         protein = 0.8 * weight
@@ -51,31 +48,24 @@ def see_activity_level():
     elif activity_level == "5":
         bmr *= 1.9
         protein = 2.5 * weight
-    return protein
-protein = see_activity_level()
-def show_results():
+    return bmr, protein
+
+def show_results(bmr, protein):
     print("=" * 15, "Results", "=" * 15)
     print(f"Your basal metabolic rate is {round(bmr, 3)} calories.")
-    # print(f"Your total daily energy expenditure is {calories} calories.")
-    # protein_rounded = round(protein, 2) int(protein_rounded) if protein_rounded.is_integer() else protein_rounded
-    print(f"Your protein requirement is {round(protein, 2)} grams.")
-    print("=" * 38)
-
+    print(f"Your protein requirement is {round(protein, 1)} grams.")
+    print("=" * 40)
 
 def main():
     # Get all inputs
     weight = get_weight()
     gender, age, height, activity_level = get_other_user_input()
-
     # Calculate BMR
     bmr = calculate_bmr(weight, gender, age, height)
-
     # Apply activity level
     bmr, protein = see_activity_level(bmr, weight, activity_level)
-
     # Show results
     show_results(bmr, protein)
-
 
 if __name__ == "__main__":
     main()
