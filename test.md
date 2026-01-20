@@ -101,7 +101,7 @@ Each test should verify one thing:
 ```python
 # Good - focused test
 def test_activity_level_1_multiplier(self):
-    bmr, protein = see_activity_level(1000, 70, 1)
+    bmr, protein = see_activity_level(1000, 70, 3, 0)
     self.assertAlmostEqual(bmr, 1200)  # 1000 * 1.2
 
 def test_activity_level_1_protein(self):
@@ -361,8 +361,8 @@ pytest test_calculator_pytest.py -v
 
 ## Next Steps
 
-1. Create `test_calculator.py` in your project folder
+1. Create `test_protein_and_calorie_calculator.py` in your project folder
 2. Copy the example tests above
-3. Run `python -m unittest test_calculator.py -v`
+3. Run `python -m unittest test_protein_and_calorie_calculator.py -v`
 4. Add more tests for edge cases
 5. Try using `pytest` for simpler syntax
