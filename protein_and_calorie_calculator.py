@@ -59,54 +59,80 @@ def get_other_user_input():
 
 def calculate_bmr(weight, gender, age, height):
     """
-        Calculate Basal Metabolic Rate using Harris-Benedict equation.
-        
-        Args:
-            weight (int): Weight in kilograms
-            gender (str): 'male' or 'female'
-            age (int): Age in years
-            height (int): Height in centimeters
-        
-        Returns:
-            float: BMR in calories per day
-        
-        Reference: Harris, J. A., & Benedict, F. G. (1918)
-        """
-    
-    while True:
-        if gender.lower() == GENDER_MALE:
-            bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
-        elif gender.lower() == GENDER_FEMALE:
-            bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.33 * age)
-        else:
-            print("That is not a gender. Please")
-            print("try again.")
-            gender = input("Please enter 'male' or 'female': ")
-            continue
-        return bmr
+    Calculate Basal Metabolic Rate using Mifflin-St Jeor equation.
 
-def see_activity_level(bmr, weight, activity_level):
-    if activity_level == 1:
-        bmr *= 1.2
-        protein = 0.8 * weight
-    elif activity_level == 2:
-        bmr *= 1.375
-        protein = 1.1 * weight
-    elif activity_level == 3:
-        bmr *= 1.55
-        protein = 1.4 * weight
-    elif activity_level == 4:
-        bmr *= 1.725
-        protein = 1.9 * weight
-    elif activity_level == 5:
-        bmr *= 1.9
-        protein = 2.5 * weight
-    return bmr, protein
+    Args:
+        weight (int): Weight in kilograms
+        gender (str): 'male' or 'female'
+        age (int): Age in years
+        height (int): Height in centimeters
 
-def show_results(bmr, protein):
-    print("=" * 15, "Results", "=" * 15)
-    print(f"Your basal metabolic rate is {round(bmr, 3)} calories.")
-    print(f"Your protein requirement is {round(protein, 1)} grams.")
+    Returns:
+        float: BMR in calories per day
+
+    Reference: Mifflin, M. D., et al. (1990)
+    """
+    if gender.lower() == GENDER_MALE:
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
+    else:  # female
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
+    return bmr
+
+def calculate_tdee(bmr, activity_level):
+    """
+    Calculate Total Daily Energy Expenditure based on activity level.
+
+    Args:
+        bmr (float): Basal Metabolic Rate in calories
+        activity_level (int): Activity level (1-5)
+
+    Returns:
+        float: TDEE in calories per day
+    """
+    activity_multipliers = {
+        1: 1.2,    # Sedentary
+        2: 1.375,  # Lightly active
+        3: 1.55,   # Moderately active
+        4: 1.725,  # Very active
+        5: 1.9     # Extremely active
+    }
+    return bmr * activity_multipliers[activity_level]
+
+def calculate_protein(weight, activity_level):
+    """
+    Calculate daily protein requirements based on weight and activity level.
+
+    Args:
+        weight (int): Weight in kilograms
+        activity_level (int): Activity level (1-5)
+
+    Returns:
+        float: Protein requirement in grams per day
+    """
+    protein_factors = {
+        1: 0.8,   # Sedentary
+        2: 1.1,   # Lightly active
+        3: 1.4,   # Moderately active
+        4: 1.9,   # Very active
+        5: 2.0    # Extremely active (adjusted from 2.5 to stay within guidelines)
+    }
+    return weight * protein_factors[activity_level]
+
+def show_results(bmr, tdee, protein):
+    """
+    Display the calculated nutritional results.
+
+    Args:
+        bmr (float): Basal Metabolic Rate in calories
+        tdee (float): Total Daily Energy Expenditure in calories
+        protein (float): Daily protein requirement in grams
+    """
+    print("\n" + "=" * 40)
+    print("    YOUR DAILY NUTRITIONAL NEEDS")
+    print("=" * 40)
+    print(f"Basal Metabolic Rate (BMR): {round(bmr, 1)} calories")
+    print(f"Total Daily Energy Expenditure (TDEE): {round(tdee, 1)} calories")
+    print(f"Recommended Daily Protein: {round(protein, 1)} grams")
     print("=" * 40)
 
 def main():
@@ -115,10 +141,12 @@ def main():
     gender, age, height, activity_level = get_other_user_input()
     # Calculate BMR
     bmr = calculate_bmr(weight, gender, age, height)
-    # Apply activity level
-    bmr, protein = see_activity_level(bmr, weight, activity_level)
+    # Calculate TDEE
+    tdee = calculate_tdee(bmr, activity_level)
+    # Calculate protein requirements
+    protein = calculate_protein(weight, activity_level)
     # Show results
-    show_results(bmr, protein)
+    show_results(bmr, tdee, protein)
 
 if __name__ == "__main__":
     main()                                                                                                                                                                                                                  
